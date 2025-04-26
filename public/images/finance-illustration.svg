@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Elements -->
+    <circle cx="200" cy="200" r="180" fill="#E3F2FD" opacity="0.5"/>
+    
+    <!-- Graph Elements -->
+    <path d="M100,300 L300,300" stroke="#90CAF9" stroke-width="2"/>
+    <path d="M100,200 L300,200" stroke="#90CAF9" stroke-width="2" opacity="0.5"/>
+    <path d="M100,100 L300,100" stroke="#90CAF9" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Graph Line -->
+    <path d="M100,250 C150,240 200,180 250,150 S300,120 350,100" stroke="#2196F3" stroke-width="3" fill="none"/>
+    
+    <!-- Dots on Graph -->
+    <circle cx="150" cy="240" r="4" fill="#2196F3"/>
+    <circle cx="200" cy="180" r="4" fill="#2196F3"/>
+    <circle cx="250" cy="150" r="4" fill="#2196F3"/>
+    
+    <!-- People -->
+    <circle cx="120" cy="280" r="20" fill="#BBDEFB"/>
+    <circle cx="280" cy="280" r="20" fill="#BBDEFB"/>
+    
+    <!-- Decorative Elements -->
+    <circle cx="350" cy="150" r="10" fill="#64B5F6" opacity="0.6"/>
+    <circle cx="50" cy="200" r="15" fill="#64B5F6" opacity="0.4"/>
+    <circle cx="300" cy="50" r="8" fill="#64B5F6" opacity="0.5"/>
+</svg> 
