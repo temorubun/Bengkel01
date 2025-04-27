@@ -19,31 +19,27 @@ class SettingController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $user = auth()->user();
-        $data = ['name' => $request->name];
 
         if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+            // Hapus foto lama jika ada
+            if ($user->photo) {
                 Storage::disk('public')->delete($user->photo);
             }
 
-            // Store new photo
-            $photo = $request->file('photo');
-            $filename = 'profile-photos/' . time() . '.' . $photo->getClientOriginalExtension();
-            $photo->storeAs('public', $filename);
-            $data['photo'] = $filename;
+            // Upload foto baru
+            $path = $request->file('photo')->store('profile_photos', 'public');
+            $validated['photo'] = $path;
         }
 
-        $user->update($data);
+        $user->update($validated);
 
-        return redirect()->route('settings.index')
-            ->with('success', 'Profil berhasil diperbarui');
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }
 
     public function updatePassword(Request $request)

@@ -178,9 +178,9 @@
                                 </div>
                                 <div class="w-8 h-8 rounded-full overflow-hidden">
                                     @if(Auth::user()->photo)
-                                        <img src="{{ Storage::url(Auth::user()->photo) }}" alt="Profile Photo" class="w-full h-full object-cover">
+                                        <img src="{{ Storage::url(Auth::user()->photo) }}" alt="Profile Photo" class="w-8 h-8 rounded-full object-cover">
                                     @else
-                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
                                             <i class="fas fa-user text-gray-400"></i>
                                         </div>
                                     @endif
