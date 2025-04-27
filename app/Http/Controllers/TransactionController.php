@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::query()->where('user_id', auth()->id());
+        $query = Transaction::with('category')
+            ->where('user_id', auth()->id());
 
         // Filter by type
         if ($request->type && $request->type !== 'Semua') {
@@ -22,38 +24,75 @@ class TransactionController extends Controller
         }
 
         // Filter by category
-        if ($request->category && $request->category !== 'Semua') {
-            $query->where('category', $request->category);
+        if ($request->category_id) {
+            $query->where('category_id', $request->category_id);
         }
 
         $transactions = $query->orderBy('date', 'desc')->get();
-        $categories = Transaction::distinct()->pluck('category');
+        $categories = Category::where('user_id', auth()->id())->get();
 
         return view('transactions.index', compact('transactions', 'categories'));
     }
 
-    public function show(Transaction $transaction)
+    public function create()
     {
-        if ($transaction->user_id !== auth()->id()) {
-            abort(403);
-        }
-        return response()->json($transaction);
+        $categories = Category::where('user_id', auth()->id())->get();
+        return view('transactions.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'date' => 'required|date',
-            'description' => 'required|string',
-            'category' => 'required|string',
+            'description' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'type' => 'required|in:Pemasukan,Pengeluaran',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
+            'notes' => 'nullable|string',
+            'is_recurring' => 'boolean',
+            'recurring_type' => 'required_if:is_recurring,1|in:weekly,monthly',
+            'next_transaction_date' => 'required_if:is_recurring,1|date|after:date',
         ]);
 
-        $validated['user_id'] = auth()->id();
-        Transaction::create($validated);
+        // Verify category belongs to user
+        $category = Category::findOrFail($request->category_id);
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
 
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan');
+        // Buat array data yang akan disimpan
+        $data = [
+            'date' => $validated['date'],
+            'description' => $validated['description'],
+            'category_id' => $validated['category_id'],
+            'type' => $validated['type'],
+            'amount' => $validated['amount'],
+            'notes' => $validated['notes'],
+            'user_id' => auth()->id(),
+            'is_recurring' => $request->boolean('is_recurring'),
+        ];
+
+        // Tambahkan data transaksi berulang jika diaktifkan
+        if ($request->boolean('is_recurring')) {
+            $data['recurring_type'] = $validated['recurring_type'];
+            $data['next_transaction_date'] = $validated['next_transaction_date'];
+            $data['reminder_sent'] = false;
+        }
+
+        Transaction::create($data);
+
+        return redirect()->route('transactions.index')
+            ->with('success', 'Transaksi berhasil ditambahkan');
+    }
+
+    public function edit(Transaction $transaction)
+    {
+        if ($transaction->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $categories = Category::where('user_id', auth()->id())->get();
+        return view('transactions.edit', compact('transaction', 'categories'));
     }
 
     public function update(Request $request, Transaction $transaction)
@@ -64,15 +103,48 @@ class TransactionController extends Controller
 
         $validated = $request->validate([
             'date' => 'required|date',
-            'description' => 'required|string',
-            'category' => 'required|string',
+            'description' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'type' => 'required|in:Pemasukan,Pengeluaran',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
+            'notes' => 'nullable|string',
+            'is_recurring' => 'boolean',
+            'recurring_type' => 'required_if:is_recurring,1|in:weekly,monthly',
+            'next_transaction_date' => 'required_if:is_recurring,1|date|after:date',
         ]);
 
-        $transaction->update($validated);
+        // Verify category belongs to user
+        $category = Category::findOrFail($request->category_id);
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
 
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil diperbarui');
+        // Buat array data yang akan diupdate
+        $data = [
+            'date' => $validated['date'],
+            'description' => $validated['description'],
+            'category_id' => $validated['category_id'],
+            'type' => $validated['type'],
+            'amount' => $validated['amount'],
+            'notes' => $validated['notes'],
+            'is_recurring' => $request->boolean('is_recurring'),
+        ];
+
+        // Update data transaksi berulang
+        if ($request->boolean('is_recurring')) {
+            $data['recurring_type'] = $validated['recurring_type'];
+            $data['next_transaction_date'] = $validated['next_transaction_date'];
+            $data['reminder_sent'] = false;
+        } else {
+            $data['recurring_type'] = null;
+            $data['next_transaction_date'] = null;
+            $data['reminder_sent'] = false;
+        }
+
+        $transaction->update($data);
+
+        return redirect()->route('transactions.index')
+            ->with('success', 'Transaksi berhasil diperbarui');
     }
 
     public function destroy(Transaction $transaction)
@@ -82,6 +154,7 @@ class TransactionController extends Controller
         }
 
         $transaction->delete();
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus');
+        return redirect()->route('transactions.index')
+            ->with('success', 'Transaksi berhasil dihapus');
     }
 } 

@@ -10,22 +10,35 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::where('user_id', auth()->id())->get();
-        return view('categories.index', compact('categories'));
+        return view('category.index', compact('categories'));
+    }
+
+    public function create()
+    {
+        return view('category.create');
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type' => 'required|in:Pemasukan,Pengeluaran',
-            'icon' => 'nullable|string'
         ]);
 
-        $validated['user_id'] = auth()->id();
-        Category::create($validated);
+        Category::create([
+            'name' => $request->name,
+            'user_id' => auth()->id(),
+        ]);
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan');
+        return redirect()->route('categories.index')
+            ->with('success', 'Kategori berhasil ditambahkan');
+    }
+
+    public function edit(Category $category)
+    {
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
+        return view('category.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
@@ -34,16 +47,16 @@ class CategoryController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type' => 'required|in:Pemasukan,Pengeluaran',
-            'icon' => 'nullable|string'
         ]);
 
-        $category->update($validated);
+        $category->update([
+            'name' => $request->name,
+        ]);
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui');
+        return redirect()->route('categories.index')
+            ->with('success', 'Kategori berhasil diperbarui');
     }
 
     public function destroy(Category $category)
@@ -51,8 +64,9 @@ class CategoryController extends Controller
         if ($category->user_id !== auth()->id()) {
             abort(403);
         }
-
+        
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus');
+        return redirect()->route('categories.index')
+            ->with('success', 'Kategori berhasil dihapus');
     }
 }

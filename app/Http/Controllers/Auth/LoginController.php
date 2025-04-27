@@ -21,8 +21,16 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            $user = Auth::user();
+            
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return back()
+                    ->with('warning', 'Anda harus memverifikasi email terlebih dahulu. Silakan cek email Anda untuk link verifikasi.')
+                    ->withInput();
+            }
 
+            $request->session()->regenerate();
             return redirect()->intended('dashboard');
         }
 

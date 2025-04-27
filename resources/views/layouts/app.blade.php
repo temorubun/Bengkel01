@@ -3,77 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanceTrack - @yield('title')</title>
+    <title>@yield('title', 'MyMoney')</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dh4fde6ss/image/upload/v1710604951/logo_zhmy9c.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 16rem; /* w-64 in rem */
+            overflow-y: auto;
+            z-index: 40;
+        }
+        .main-content {
+            margin-left: 16rem; /* Same as sidebar width */
+            width: calc(100% - 16rem);
+            padding-top: 4rem; /* Add padding to prevent content from being hidden under header */
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: calc(100% - 16rem);
+            background-color: white;
+            z-index: 30;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
+    @stack('styles')
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
+<body class="bg-gray-100">
+    @auth
+    <div class="min-h-screen flex">
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg">
+        <aside class="sidebar bg-white shadow-lg">
             <!-- Logo -->
-            <div class="flex items-center p-4">
-                <div class="bg-black p-2 rounded-lg">
-                    <span class="text-white text-xl font-bold">FT</span>
+            <div class="p-4 border-b flex items-center justify-center">
+                <div class="flex items-center space-x-2">
+                    <img src="https://res.cloudinary.com/dh4fde6ss/image/upload/v1710604951/logo_zhmy9c.png" alt="MyMoney Logo" class="h-8 w-auto">
+                    <span class="text-xl font-bold">MyMoney</span>
                 </div>
-                <span class="ml-2 text-xl font-semibold">FinanceTrack</span>
             </div>
 
             <!-- Navigation -->
-            <nav class="mt-4">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-600' : 'text-gray-700' }} hover:bg-blue-50 hover:text-blue-600">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="{{ route('transactions.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('transactions.*') ? 'bg-blue-50 text-blue-600' : 'text-gray-700' }} hover:bg-blue-50 hover:text-blue-600">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Transaksi
-                </a>
-                <a href="{{ route('categories.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('categories.*') ? 'bg-blue-50 text-blue-600' : 'text-gray-700' }} hover:bg-blue-50 hover:text-blue-600">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                    Kategori
-                </a>
-                <a href="{{ route('analysis.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('analysis.*') ? 'bg-blue-50 text-blue-600' : 'text-gray-700' }} hover:bg-blue-50 hover:text-blue-600">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    Analisis
-                </a>
-                <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-600' : 'text-gray-700' }} hover:bg-blue-50 hover:text-blue-600">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Laporan
-                </a>
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('transactions.index') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('transactions.*') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Transaksi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('categories.index') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('categories.*') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-tags"></i>
+                            <span>Kategori</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('analysis.index') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('analysis.*') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analisis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('reports.index') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('reports.*') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Laporan</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('reminders.index') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('reminders.*') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-bell"></i>
+                            <span>Pengingat</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 p-2 rounded-lg {{ request()->routeIs('settings.*') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-cog"></i>
+                            <span>Pengaturan</span>
+                        </a>
+                    </li>
+                </ul>
             </nav>
-        </div>
+        </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Navigation -->
-            <div class="bg-white shadow-sm">
-                <div class="flex justify-between items-center px-8 py-4">
-                    <h1 class="text-2xl font-semibold">@yield('title')</h1>
-                    <div class="flex items-center">
-                        <span class="text-gray-600 mr-4">{{ auth()->user()->email ?? 'user@demo.com' }}</span>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg">Logout</button>
-                        </form>
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="flex justify-between items-center px-6 py-4">
+                    <h1 class="text-2xl font-bold">@yield('title')</h1>
+                    <div class="flex items-center space-x-4">
+                        <!-- Notification Bell -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="text-gray-600 hover:text-blue-600 relative">
+                                <i class="fas fa-bell text-xl"></i>
+                                @if(auth()->user()->unreadNotifications->count() > 0)
+                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                                        {{ auth()->user()->unreadNotifications->count() }}
+                                    </span>
+                                @endif
+                            </button>
+                            
+                            <!-- Notification Dropdown -->
+                            <div x-show="open" 
+                                 @click.away="open = false"
+                                 class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg overflow-hidden z-50">
+                                <!-- Header -->
+                                <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                                    <h3 class="text-sm font-semibold text-gray-700">Notifikasi</h3>
+                                    @if(auth()->user()->notifications()->count() > 0)
+                                        <form action="{{ route('notifications.clear-all') }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-xs text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash-alt mr-1"></i>
+                                                Hapus Semua
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                                
+                                <!-- Notification List with Scroll -->
+                                <div class="overflow-y-auto" style="max-height: 400px;">
+                                    @forelse(auth()->user()->notifications()->take(10)->get() as $notification)
+                                        <a href="{{ route('notifications.show', $notification) }}" class="block">
+                                            <div class="px-4 py-3 hover:bg-gray-50 border-b last:border-0 {{ $notification->read_at ? 'bg-gray-50' : 'bg-white' }}">
+                                                <div class="flex items-start">
+                                                    @if($notification->type === 'App\Notifications\TransactionReminder')
+                                                        <i class="fas fa-exchange-alt text-blue-500 mt-1 mr-3"></i>
+                                                    @elseif($notification->type === 'App\Notifications\ReminderNotification')
+                                                        <i class="fas fa-bell text-blue-500 mt-1 mr-3"></i>
+                                                    @endif
+                                                    <div class="flex-1">
+                                                        <p class="text-sm text-gray-800 font-medium">
+                                                            {{ $notification->data['title'] }}
+                                                        </p>
+                                                        <p class="text-xs text-gray-500 mt-1">
+                                                            {{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @empty
+                                        <div class="px-4 py-3 text-sm text-gray-600 text-center">
+                                            Tidak ada notifikasi
+                                        </div>
+                                    @endforelse
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="px-4 py-3 bg-gray-50 border-t text-center">
+                                    <a href="{{ route('notifications.index') }}" class="text-xs text-blue-600 hover:text-blue-800">
+                                        Lihat Semua Notifikasi
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <button id="profileButton" class="flex items-center space-x-3 focus:outline-none">
+                                <div class="text-gray-600">
+                                    {{ Auth::user()->name }}
+                                </div>
+                                <div class="w-8 h-8 rounded-full overflow-hidden">
+                                    @if(Auth::user()->photo)
+                                        <img src="{{ Storage::url(Auth::user()->photo) }}" alt="Profile Photo" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-400"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                                <a href="{{ route('settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user-cog mr-2"></i>
+                                    Pengaturan Profil
+                                </a>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             <!-- Page Content -->
-            <div class="flex-1 overflow-auto p-8">
+            <main class="p-6">
                 @yield('content')
+            </main>
+        </div>
+    </div>
+    @else
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold mb-4">Silakan Login Terlebih Dahulu</h1>
+            <div class="space-x-4">
+                <a href="{{ route('login') }}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Login</a>
+                <a href="{{ route('register') }}" class="inline-block bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">Register</a>
             </div>
         </div>
     </div>
+    @endauth
+
+    @stack('scripts')
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileButton && profileDropdown) {
+            // Toggle dropdown
+            profileButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!profileButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+    });
+    </script>
+
+    @if(session('reminder_notification'))
+        <script>
+        Swal.fire({
+            title: 'Pengingat!',
+            html: `{!! session('reminder_notification') !!}`,
+            icon: 'info',
+            confirmButtonText: 'OK',
+            timer: 5000,
+            timerProgressBar: true
+        });
+        </script>
+    @endif
 </body>
 </html> 

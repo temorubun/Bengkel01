@@ -1,4 +1,4 @@
-# Bengkel01 - Aplikasi Manajemen Keuangan
+# MyMoney - Aplikasi Manajemen Keuangan
 
 Aplikasi manajemen keuangan berbasis web yang membantu pengguna untuk melacak pemasukan dan pengeluaran mereka.
 
@@ -22,7 +22,7 @@ Aplikasi manajemen keuangan berbasis web yang membantu pengguna untuk melacak pe
 
 1. Clone repository
 ```bash
-git clone https://github.com/temorubun/Bengkel01.git
+git clone https://github.com/temorubun/MyMoney.git
 ```
 
 2. Install dependencies
@@ -55,5 +55,5 @@ php artisan serve
 
 ## Login Default
 
-- Email: admin@financetrack.com
+- Email: admin@mymoney.com
 - Password: admin123
